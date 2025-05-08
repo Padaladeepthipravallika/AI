@@ -1,0 +1,66 @@
+import math
+
+class GameState:
+    def __init__(self, stones, max_player=True):  # Fixed constructor name
+        self.stones = stones
+        self.max_player = max_player  # True = maximizing player (AI), False = minimizing (opponent)
+
+    def is_terminal(self):
+        return self.stones == 0
+
+    def get_score(self):
+        # In a zero-sum game, win = +1 for max player, loss = -1
+        if self.is_terminal():
+            return -1 if self.max_player else 1
+        return 0  # Non-terminal
+
+    def get_possible_moves(self):
+        return [i for i in range(1, 4) if i <= self.stones]
+
+    def make_move(self, move):
+        return GameState(self.stones - move, not self.max_player)
+
+def minimax(state: GameState):
+    if state.is_terminal():
+        return state.get_score(), None
+
+    if state.max_player:
+        best_value = -math.inf
+        best_move = None
+        for move in state.get_possible_moves():
+            value, _ = minimax(state.make_move(move))
+            if value > best_value:
+                best_value = value
+                best_move = move
+        return best_value, best_move
+    else:
+        best_value = math.inf
+        best_move = None
+        for move in state.get_possible_moves():
+            value, _ = minimax(state.make_move(move))
+            if value < best_value:
+                best_value = value
+                best_move = move
+        return best_value, best_move
+
+# Example usage
+if __name__ == "__main__":  # Fixed the __name__ check
+    initial_stones = 7
+    current_state = GameState(initial_stones, max_player=True)
+
+    print(f"Initial stones: {initial_stones}")
+    while not current_state.is_terminal():
+        if current_state.max_player:
+            _, move = minimax(current_state)
+            print(f"AI chooses: {move}")
+        else:
+            move = int(input(f"Your move (1-3, stones left {current_state.stones}): "))
+            while move not in current_state.get_possible_moves():
+                move = int(input("Invalid move. Try again: "))
+
+        current_state = current_state.make_move(move)
+
+    if current_state.max_player:
+        print("You win!")
+    else:
+        print("AI wins!")
