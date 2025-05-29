@@ -1,0 +1,7 @@
+person(john, dob(1990, 5, 12)).
+person(mary, dob(1985, 11, 30)).
+person(alex, dob(2000, 1, 5)).
+person(susan, dob(1995, 8, 22)).
+
+get_dob(Name, dob(Year, Month, Day)) :-
+    person(Name, dob(Year, Month, Day)).
