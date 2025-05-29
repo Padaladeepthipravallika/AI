@@ -1,0 +1,92 @@
+import math
+import random
+
+# Sigmoid activation and derivative
+def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# XOR input and output
+X = [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+]
+
+y = [0, 1, 1, 0]
+
+# Initialize weights and biases
+input_size = 2
+hidden_size = 2
+output_size = 1
+learning_rate = 0.5
+
+# Random weights
+w1 = [[random.uniform(-1, 1) for _ in range(hidden_size)] for _ in range(input_size)]
+b1 = [0 for _ in range(hidden_size)]
+w2 = [random.uniform(-1, 1) for _ in range(hidden_size)]
+b2 = 0
+
+# Training loop
+for epoch in range(10000):
+    total_error = 0
+    for i in range(4):
+        # Forward pass
+        input_data = X[i]
+        target = y[i]
+
+        # Hidden layer
+        hidden_input = [0] * hidden_size
+        hidden_output = [0] * hidden_size
+        for j in range(hidden_size):
+            hidden_input[j] = sum(input_data[k] * w1[k][j] for k in range(input_size)) + b1[j]
+            hidden_output[j] = sigmoid(hidden_input[j])
+
+        # Output layer
+        final_input = sum(hidden_output[j] * w2[j] for j in range(hidden_size)) + b2
+        final_output = sigmoid(final_input)
+
+        # Compute error
+        error = target - final_output
+        total_error += error ** 2
+
+        # Backpropagation
+        d_output = error * sigmoid_derivative(final_output)
+
+        d_hidden = [0] * hidden_size
+        for j in range(hidden_size):
+            d_hidden[j] = d_output * w2[j] * sigmoid_derivative(hidden_output[j])
+
+        # Update output weights and bias
+        for j in range(hidden_size):
+            w2[j] += learning_rate * d_output * hidden_output[j]
+        b2 += learning_rate * d_output
+
+        # Update input weights and biases
+        for k in range(input_size):
+            for j in range(hidden_size):
+                w1[k][j] += learning_rate * d_hidden[j] * input_data[k]
+        for j in range(hidden_size):
+            b1[j] += learning_rate * d_hidden[j]
+
+    if epoch % 1000 == 0:
+        print(f"Epoch {epoch} - Error: {round(total_error, 4)}")
+
+# Final predictions
+print("\nFinal predictions after training:")
+for i in range(4):
+    input_data = X[i]
+
+    hidden_input = [0] * hidden_size
+    hidden_output = [0] * hidden_size
+    for j in range(hidden_size):
+        hidden_input[j] = sum(input_data[k] * w1[k][j] for k in range(input_size)) + b1[j]
+        hidden_output[j] = sigmoid(hidden_input[j])
+
+    final_input = sum(hidden_output[j] * w2[j] for j in range(hidden_size)) + b2
+    final_output = sigmoid(final_input)
+
+    print(f"Input: {input_data} => Output: {round(final_output, 3)}")
