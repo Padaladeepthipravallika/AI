@@ -1,0 +1,47 @@
+import sys
+
+# Alpha-Beta Pruning Algorithm
+def alpha_beta(node, depth, is_maximizing, tree, alpha, beta):
+    if node not in tree:
+        return node  # It's a leaf node (an integer value)
+
+    if is_maximizing:
+        max_eval = -sys.maxsize
+        for child in tree[node]:
+            eval = alpha_beta(child, depth + 1, False, tree, alpha, beta)
+            max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break  # Prune
+        return max_eval
+    else:
+        min_eval = sys.maxsize
+        for child in tree[node]:
+            eval = alpha_beta(child, depth + 1, True, tree, alpha, beta)
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break  # Prune
+        return min_eval
+
+# === Sample Decision Tree ===
+# Tree is a dictionary where keys are decision nodes,
+# and values are lists of children (sub-decisions or outcomes)
+
+# Structure:
+#       A
+#     /   \
+#   B       C
+#  / \     / \
+# 3   5   6   9
+
+tree = {
+    'A': ['B', 'C'],
+    'B': [3, 5],
+    'C': [6, 9]
+}
+
+# Run Alpha-Beta Pruning from root 'A'
+optimal_value = alpha_beta('A', 0, True, tree, -sys.maxsize, sys.maxsize)
+
+print("Optimal decision value:", optimal_value)
