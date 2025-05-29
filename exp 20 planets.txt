@@ -1,0 +1,23 @@
+% planet(Name, OrderFromSun, Type, MassInEarths, NumberOfMoons).
+
+planet(mercury, 1, terrestrial, 0.055, 0).
+planet(venus, 2, terrestrial, 0.815, 0).
+planet(earth, 3, terrestrial, 1.0, 1).
+planet(mars, 4, terrestrial, 0.107, 2).
+planet(jupiter, 5, gas_giant, 317.8, 79).
+planet(saturn, 6, gas_giant, 95.2, 83).
+planet(uranus, 7, ice_giant, 14.5, 27).
+planet(neptune, 8, ice_giant, 17.1, 14).
+
+% Query: Get type of a planet
+planet_type(Name, Type) :-
+    planet(Name, _, Type, _, _).
+
+% Query: Get number of moons
+planet_moons(Name, Moons) :-
+    planet(Name, _, _, _, Moons).
+
+% Query: Get planets with more than N moons
+planets_with_many_moons(N, Name) :-
+    planet(Name, _, _, _, Moons),
+    Moons > N.
